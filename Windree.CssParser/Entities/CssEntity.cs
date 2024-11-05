@@ -8,11 +8,11 @@ public class CssEntity
     /// <summary>
     /// Type of css entity
     /// </summary>
-    public CssRecordType Type { get; init; }
+    public CodeBlockType Type { get; init; }
     /// <summary>
     /// Selector path in case an entity is a selector
     /// </summary>
-    public CssSelectorPath? SelectorPath { get; init; }
+    public CssSelector? Selector { get; init; }
     /// <summary>
     /// </summary>
     /// A comment text

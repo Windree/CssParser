@@ -8,5 +8,5 @@ public class CssPath
     /// <summary>
     /// parts of css selector and preceding operator like " ".class or > a or + link
     /// </summary>
-    public CssItem[] Item { get; init; } = { };
+    public required CssItem[] Item { get; init; }
 }

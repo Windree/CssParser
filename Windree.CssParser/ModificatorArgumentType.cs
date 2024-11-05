@@ -1,4 +1,4 @@
-﻿namespace Windree.CssParser.Entities;
+﻿namespace Windree.CssParser;
 
 /// <summary>
 /// A modificator argument type

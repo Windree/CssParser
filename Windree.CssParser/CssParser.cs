@@ -6,79 +6,129 @@ using System.Text;
 using System.Threading.Tasks;
 using Windree.CssParser.Entities;
 
-namespace Windree.CssParser
+namespace Windree.CssParser;
+
+public class CssParser
 {
-    public class CssParser
+    private readonly string content;
+
+    public CssParser(string s)
     {
-        private readonly string content;
-
-        public CssParser(string s)
+        if (s.LongCount() > int.MaxValue)
         {
-            if (s.LongCount() > int.MaxValue)
-            {
-                throw new ArgumentException(nameof(s),
-                    $"The string is too long. The maximum length is {int.MaxValue}");
-            }
-
-            content = s;
+            throw new ArgumentException(nameof(s),
+                $"The string is too long. The maximum length is {int.MaxValue}");
         }
 
-        public CssEntity[] Parse()
+        content = s;
+    }
+
+    public ContentBlock[] Parse()
+    {
+        var contentBlocks = new List<ContentBlock>();
+        var i = 0;
+        var space = new StringBuilder();
+
+        while (i < content.Length)
         {
-            var cssEntity = new List<CssEntity>();
-            for (var i = 0; i < content.Length; i++)
+            if (TryParseSpaceBlock(content, i, out var startSpaceOffset, out var endSpaceOffset))
             {
-                if (string.IsNullOrWhiteSpace(content[i].ToString())) continue;
-                if (TryParseComment(i, out var endOffset, out var comment))
+                contentBlocks.Add(new ContentBlock
                 {
-                    cssEntity.Add(new CssEntity()
-                    {
-                        Type = CssRecordType.Comment,
-                        Comment = comment
-                    });
-                    i = endOffset;
-                }
+                    Type = CodeBlockType.Space,
+                    StartOffset = startSpaceOffset,
+                    EndOffset = endSpaceOffset
+                });
+                i = endSpaceOffset;
+                continue;
             }
-            return cssEntity.ToArray();
-        }
 
-        private bool TryParseComment(int offset, out int endOffset, [NotNullWhen(true)] out string? comment)
-        {
-            const string openWith = "/*";
-            const string closeWith = "*/";
-            if (offset >= content.Length - openWith.Length || content.Substring(offset, openWith.Length) != openWith)
-            {
-                endOffset = offset;
-                comment = null;
-                return false;
-            }
-            var commentStartOffset = offset + openWith.Length;
-            var commentEndOffset = content.IndexOf(closeWith, offset + openWith.Length, StringComparison.Ordinal);
-            if (commentEndOffset == -1)
-            {
-                endOffset = content.Length - 1;
-                comment = content.Substring(commentStartOffset, content.Length - commentStartOffset);
-                return true;
-            }
-            endOffset = commentEndOffset + closeWith.Length;
-            comment = content.Substring(commentStartOffset, commentEndOffset - commentStartOffset);
-            return true;
+            //if (TryGetSolidBlock(content, i, "/*", "*/", out var startOffset, out var endOffset))
+            //{
+            //    contentBlocks.Add(new ContentBlock
+            //    {
+            //        Type = CodeBlockType.Comment,
+            //        StartOffset = startOffset,
+            //        EndOffset = endOffset
+            //    });
+            //    i = endOffset;
+            //    continue;
+            //}
+            i++;
         }
+        return contentBlocks.ToArray();
+    }
 
-        private void TryParseSelector(long offset)
+    private static bool TryParseSpaceBlock(string s, int offset, out int startOffset, out int endOffset)
+    {
+        startOffset = endOffset = offset;
+
+        if (offset == s.Length) return false;
+
+        for (var i = offset; i < s.Length; i++)
         {
-            if (TryParseComment(0, out var endOffset, out var comment))
+            if (string.IsNullOrWhiteSpace(s[i].ToString()))
             {
-                var r1 = endOffset;
-                var r2 = comment;
+                endOffset = i;
+                continue;
             }
             else
             {
-                var r1 = endOffset;
-                var r2 = comment;
+                endOffset = i;
+                return i != offset;
             }
         }
-
-
+        endOffset = s.Length;
+        return true;
     }
+
+    //private static bool TryGetSolidBlock(string s, int offset, string openWith, string closeWith, out int startOffset, out int lastOffset)
+    //{
+    //    if (offset >= s.Length - openWith.Length || s.Substring(offset, openWith.Length) != openWith)
+    //    {
+    //        startOffset = lastOffset = offset;
+    //        return false;
+    //    }
+    //    startOffset = offset + openWith.Length;
+    //    var commentEndOffset = s.IndexOf(closeWith, offset + openWith.Length, StringComparison.Ordinal);
+    //    if (commentEndOffset == -1)
+    //    {
+    //        commentEndOffset = s.Length;
+    //    }
+    //    lastOffset = commentEndOffset;
+    //    return true;
+    //}
+
+    //private bool TryParseSelector(int offset, [NotNullWhen(true)] out CssEntity? cssEntity)
+    //{
+    //    const char cssStylesOpen = '{';
+    //    const char cssStylesClose = '}';
+    //    var selectorStartOffset = offset;
+    //    var selectorEndOffset = content.IndexOf(cssStylesOpen, offset);
+    //    if (selectorEndOffset == -1)
+    //    {
+    //        selectorEndOffset = content.Length;
+    //    }
+
+    //    var selector = content.Substring(selectorStartOffset, selectorEndOffset - selectorStartOffset).Trim();
+    //    GetBlock(selectorEndOffset, out var cssValueOffset, out var value);
+    //    cssEntity = null;
+    //    return true;
+    //}
+
+    //private string GetBlock(int offset, string start, string end, out int lastOffset, out string? blockContent)
+    //{
+    //    if (offset < content.Length - 1)
+    //    {
+    //        lastOffset = offset;
+    //        value = "";
+    //        return;
+    //    }
+
+    //    var blockChar = content[..1];
+
+    //}
+
+
+
 }

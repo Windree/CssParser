@@ -1,4 +1,6 @@
-﻿namespace Windree.CssParser.Entities;
+﻿using Windree.CssParser.Entities;
+
+namespace Windree.CssParser;
 
 public class ModificatorArgument
 {
