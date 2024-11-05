@@ -28,6 +28,7 @@ namespace Windree.CssParser
             var cssEntity = new List<CssEntity>();
             for (var i = 0; i < content.Length; i++)
             {
+                if (string.IsNullOrWhiteSpace(content[i].ToString())) continue;
                 if (TryParseComment(i, out var endOffset, out var comment))
                 {
                     cssEntity.Add(new CssEntity()
@@ -35,28 +36,29 @@ namespace Windree.CssParser
                         Type = CssRecordType.Comment,
                         Comment = comment
                     });
+                    i = endOffset;
                 }
 
             }
             return cssEntity.ToArray();
         }
 
-        private bool TryParseComment(int offset, [NotNullWhen(true)] out int? endOffset, [NotNullWhen(true)] out string? comment)
+        private bool TryParseComment(int offset, out int endOffset, out string comment)
         {
             const string openWith = "/*";
             const string closeWith = "*/";
             if (offset >= content.Length - openWith.Length || content.Substring(offset, 2) != openWith)
             {
-                endOffset = null;
-                comment = null;
+                endOffset = offset;
+                comment = string.Empty;
                 return false;
             }
             var closeOffset = content.IndexOf(closeWith, StringComparison.Ordinal);
             if (closeOffset == -1)
             {
                 endOffset = content.Length - 1;
-                comment = null;
-                return false;
+                comment = content.Substring(offset, content.Length - offset);
+                return true;
             }
 
             var commentStartOffset = offset + openWith.Length;
@@ -67,7 +69,24 @@ namespace Windree.CssParser
 
         private void TryParseSelector(long offset)
         {
+            if (GetValidOrDefaultName(out var s, ""))
+            {
 
+            }
+        }
+
+        private bool GetValidOrDefaultName([NotNullWhen(true)] out string? validOrDefaultName, string? name)
+        {
+            if (name is null)
+            {
+                validOrDefaultName = null;
+                return false;
+            }
+            else
+            {
+                validOrDefaultName = "defaultName";
+                return true;
+            }
         }
     }
 }
