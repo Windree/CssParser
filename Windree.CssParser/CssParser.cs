@@ -38,55 +38,47 @@ namespace Windree.CssParser
                     });
                     i = endOffset;
                 }
-
             }
             return cssEntity.ToArray();
         }
 
-        private bool TryParseComment(int offset, out int endOffset, out string comment)
+        private bool TryParseComment(int offset, out int endOffset, [NotNullWhen(true)] out string? comment)
         {
             const string openWith = "/*";
             const string closeWith = "*/";
-            if (offset >= content.Length - openWith.Length || content.Substring(offset, 2) != openWith)
+            if (offset >= content.Length - openWith.Length || content.Substring(offset, openWith.Length) != openWith)
             {
                 endOffset = offset;
-                comment = string.Empty;
+                comment = null;
                 return false;
             }
-            var closeOffset = content.IndexOf(closeWith, StringComparison.Ordinal);
-            if (closeOffset == -1)
+            var commentStartOffset = offset + openWith.Length;
+            var commentEndOffset = content.IndexOf(closeWith, offset + openWith.Length, StringComparison.Ordinal);
+            if (commentEndOffset == -1)
             {
                 endOffset = content.Length - 1;
-                comment = content.Substring(offset, content.Length - offset);
+                comment = content.Substring(commentStartOffset, content.Length - commentStartOffset);
                 return true;
             }
-
-            var commentStartOffset = offset + openWith.Length;
-            endOffset = closeOffset + closeWith.Length;
-            comment = content.Substring(commentStartOffset, closeOffset - commentStartOffset);
+            endOffset = commentEndOffset + closeWith.Length;
+            comment = content.Substring(commentStartOffset, commentEndOffset - commentStartOffset);
             return true;
         }
 
         private void TryParseSelector(long offset)
         {
-            if (GetValidOrDefaultName(out var s, ""))
+            if (TryParseComment(0, out var endOffset, out var comment))
             {
-
-            }
-        }
-
-        private bool GetValidOrDefaultName([NotNullWhen(true)] out string? validOrDefaultName, string? name)
-        {
-            if (name is null)
-            {
-                validOrDefaultName = null;
-                return false;
+                var r1 = endOffset;
+                var r2 = comment;
             }
             else
             {
-                validOrDefaultName = "defaultName";
-                return true;
+                var r1 = endOffset;
+                var r2 = comment;
             }
         }
+
+
     }
 }
