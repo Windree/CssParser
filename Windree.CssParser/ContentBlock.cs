@@ -9,9 +9,9 @@ namespace Windree.CssParser
 {
     public class ContentBlock
     {
+        public CodeBlockType Type { get; init; }
         public int StartOffset { get; init; }
         public int EndOffset { get; init; }
-        public CodeBlockType Type { get; set; }
     }
 }
 

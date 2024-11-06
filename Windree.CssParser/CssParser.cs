@@ -43,17 +43,17 @@ public class CssParser
                 continue;
             }
 
-            //if (TryGetSolidBlock(content, i, "/*", "*/", out var startOffset, out var endOffset))
-            //{
-            //    contentBlocks.Add(new ContentBlock
-            //    {
-            //        Type = CodeBlockType.Comment,
-            //        StartOffset = startOffset,
-            //        EndOffset = endOffset
-            //    });
-            //    i = endOffset;
-            //    continue;
-            //}
+            if (TryParseSolidBlock(content, i, "/*", "*/", out var startOffset, out var endOffset))
+            {
+                contentBlocks.Add(new ContentBlock
+                {
+                    Type = CodeBlockType.Comment,
+                    StartOffset = startOffset,
+                    EndOffset = endOffset
+                });
+                i = endOffset;
+                continue;
+            }
             i++;
         }
         return contentBlocks.ToArray();
@@ -82,22 +82,25 @@ public class CssParser
         return true;
     }
 
-    //private static bool TryGetSolidBlock(string s, int offset, string openWith, string closeWith, out int startOffset, out int lastOffset)
-    //{
-    //    if (offset >= s.Length - openWith.Length || s.Substring(offset, openWith.Length) != openWith)
-    //    {
-    //        startOffset = lastOffset = offset;
-    //        return false;
-    //    }
-    //    startOffset = offset + openWith.Length;
-    //    var commentEndOffset = s.IndexOf(closeWith, offset + openWith.Length, StringComparison.Ordinal);
-    //    if (commentEndOffset == -1)
-    //    {
-    //        commentEndOffset = s.Length;
-    //    }
-    //    lastOffset = commentEndOffset;
-    //    return true;
-    //}
+    private static bool TryParseSolidBlock(string s, int offset, string openWith, string closeWith, out int startOffset, out int lastOffset)
+    {
+        if (offset >= s.Length - openWith.Length || s.Substring(offset, openWith.Length) != openWith)
+        {
+            startOffset = lastOffset = offset;
+            return false;
+        }
+        startOffset = offset;
+        var commentEndOffset = s.IndexOf(closeWith, offset + openWith.Length, StringComparison.Ordinal);
+        if (commentEndOffset == -1)
+        {
+            lastOffset = s.Length;
+        }
+        else
+        {
+            lastOffset = commentEndOffset + closeWith.Length;
+        }
+        return true;
+    }
 
     //private bool TryParseSelector(int offset, [NotNullWhen(true)] out CssEntity? cssEntity)
     //{

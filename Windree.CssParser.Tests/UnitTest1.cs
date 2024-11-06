@@ -58,28 +58,24 @@ namespace Windree.CssParser.Tests
             Assert.AreEqual(5, css[1].StartOffset);
             Assert.AreEqual(6, css[1].EndOffset);
         }
-
-        //[TestMethod]
-        //public void TestNoComment()
-        //{
-        //    var parser = new CssParser("  .div {} ");
-        //    var css = parser.Parse();
-        //    Assert.AreEqual(0, css.Length);
-        //}
-        //[TestMethod]
-        //public void TestComment()
-        //{
-        //    var parser = new CssParser("    /*Comment*/    ");
-        //    var css = parser.Parse();
-        //    Assert.AreEqual("Comment", css[0].Comment);
-        //}
-        //[TestMethod]
-        //public void TestUnclosedComment()
-        //{
-        //    var parser = new CssParser("    /*Comment/    ");
-        //    var css = parser.Parse();
-        //    Assert.AreEqual("Comment/    ", css[0].Comment);
-        //}
+        [TestMethod]
+        public void TestComment()
+        {
+            var parser = new CssParser("    /*Comment*/    ");
+            var css = parser.Parse();
+            Assert.AreEqual(CodeBlockType.Comment, css[1].Type);
+            Assert.AreEqual(4, css[1].StartOffset);
+            Assert.AreEqual(15, css[1].EndOffset);
+        }
+        [TestMethod]
+        public void TestUnclosedComment()
+        {
+            var parser = new CssParser(" /*Com/ ");
+            var css = parser.Parse();
+            Assert.AreEqual(CodeBlockType.Comment, css[1].Type);
+            Assert.AreEqual(1, css[1].StartOffset);
+            Assert.AreEqual(8, css[1].EndOffset);
+        }
         //[TestMethod]
         //public void TestUnclosedSelector()
         //{
