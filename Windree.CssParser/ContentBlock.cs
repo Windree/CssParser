@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Windree.CssParser.Entities;
+﻿namespace Windree.CssParser;
 
-namespace Windree.CssParser
+public class ContentBlock
 {
-    public class ContentBlock
-    {
-        public CodeBlockType Type { get; init; }
-        public int StartOffset { get; init; }
-        public int EndOffset { get; init; }
-    }
-}
+    public required CodeBlockType Type { get; init; }
+    public required ContentBlock[] Blocks { get; init; }
+    public required int StartOffset { get; init; }
+    public required int EndOffset { get; init; }
 
+}

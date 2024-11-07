@@ -6,5 +6,6 @@ public enum CodeBlockType
     Value,
     Comment,
     String,
-    Space
+    Space,
+    Properties
 }

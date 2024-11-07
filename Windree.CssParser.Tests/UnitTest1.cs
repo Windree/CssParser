@@ -5,104 +5,48 @@ namespace Windree.CssParser.Tests
     [TestClass]
     public class UnitTest1
     {
-        [TestMethod]
-        public void TestSpaceNonEmpty()
+        private readonly ContentBlock[] css;
+        public UnitTest1()
         {
-            var parser = new CssParser("  ");
-            var css = parser.Parse();
-            Assert.AreEqual(CodeBlockType.Space, css[0].Type);
-            Assert.AreEqual(0, css[0].StartOffset);
-            Assert.AreEqual(2, css[0].EndOffset);
+            var parser = new RootContentBlock(" /*start*/ 'string' {width:100%/*width - 100%*/; height: '30px'} /**/''");
+            css = parser.Parse();
         }
-        [TestMethod]
-        public void TestTwoSpaceOneLetter()
-        {
-            var parser = new CssParser("  a   ");
-            var css = parser.Parse();
-            Assert.AreEqual(CodeBlockType.Space, css[0].Type);
-            Assert.AreEqual(0, css[0].StartOffset);
-            Assert.AreEqual(2, css[0].EndOffset);
-            Assert.AreEqual(3, css[1].StartOffset);
-            Assert.AreEqual(6, css[1].EndOffset);
 
+        [TestMethod]
+        public void TestCommentInRootEmpty()
+        {
+            Assert.AreEqual(CodeBlockType.Comment, css[3].Type);
+            Assert.AreEqual(65, css[3].StartOffset);
+            Assert.AreEqual(69, css[3].EndOffset);
         }
         [TestMethod]
-        public void TestTwoSpaceTwoLetter()
+        public void TestStringInRootEmpty()
         {
-            var parser = new CssParser("  a   b");
-            var css = parser.Parse();
-            Assert.AreEqual(CodeBlockType.Space, css[0].Type);
-            Assert.AreEqual(0, css[0].StartOffset);
-            Assert.AreEqual(2, css[0].EndOffset);
-            Assert.AreEqual(3, css[1].StartOffset);
-            Assert.AreEqual(6, css[1].EndOffset);
+            Assert.AreEqual(CodeBlockType.String, css[4].Type);
+            Assert.AreEqual(69, css[4].StartOffset);
+            Assert.AreEqual(71, css[4].EndOffset);
+        }
+        [TestMethod]
+        public void TestCommentInRoot()
+        {
+            Assert.AreEqual(CodeBlockType.Comment, css[0].Type);
+            Assert.AreEqual(1, css[0].StartOffset);
+            Assert.AreEqual(10, css[0].EndOffset);
+        }
+        [TestMethod]
+        public void TestStringInRoot()
+        {
+            Assert.AreEqual(CodeBlockType.String, css[1].Type);
+            Assert.AreEqual(11, css[1].StartOffset);
+            Assert.AreEqual(19, css[1].EndOffset);
+        }
+        [TestMethod]
+        public void TestProperties()
+        {
+            Assert.AreEqual(CodeBlockType.Properties, css[2].Type);
+            Assert.AreEqual(20, css[2].StartOffset);
+            Assert.AreEqual(64, css[2].EndOffset);
+        }
 
-        }
-        [TestMethod]
-        public void TestOneSpaceTwoLetter()
-        {
-            var parser = new CssParser("a   b");
-            var css = parser.Parse();
-            Assert.AreEqual(CodeBlockType.Space, css[0].Type);
-            Assert.AreEqual(1, css[0].StartOffset);
-            Assert.AreEqual(4, css[0].EndOffset);
-        }
-        [TestMethod]
-        public void TestTwoSpaceTwoLetterAndSpace()
-        {
-            var parser = new CssParser("a   b ");
-            var css = parser.Parse();
-            Assert.AreEqual(CodeBlockType.Space, css[0].Type);
-            Assert.AreEqual(1, css[0].StartOffset);
-            Assert.AreEqual(4, css[0].EndOffset);
-            Assert.AreEqual(5, css[1].StartOffset);
-            Assert.AreEqual(6, css[1].EndOffset);
-        }
-        [TestMethod]
-        public void TestComment()
-        {
-            var parser = new CssParser("    /*Comment*/    ");
-            var css = parser.Parse();
-            Assert.AreEqual(CodeBlockType.Comment, css[1].Type);
-            Assert.AreEqual(4, css[1].StartOffset);
-            Assert.AreEqual(15, css[1].EndOffset);
-        }
-        [TestMethod]
-        public void TestUnclosedComment()
-        {
-            var parser = new CssParser(" /*Com/ ");
-            var css = parser.Parse();
-            Assert.AreEqual(CodeBlockType.Comment, css[1].Type);
-            Assert.AreEqual(1, css[1].StartOffset);
-            Assert.AreEqual(8, css[1].EndOffset);
-        }
-        //[TestMethod]
-        //public void TestUnclosedSelector()
-        //{
-        //    var parser = new CssParser("    div {    ");
-        //    var css = parser.Parse();
-        //    Assert.AreEqual("div", css[0].Selector?.CssPaths[0].Item[0].Name);
-        //}
-        //[TestMethod]
-        //public void TestTagSelector()
-        //{
-        //    var parser = new CssParser("    div { width:1px;}   ");
-        //    var css = parser.Parse();
-        //    Assert.AreEqual("div", css[0].Selector?.CssPaths[0].Item[0].Name);
-        //}
-        //[TestMethod]
-        //public void TestIdSelector()
-        //{
-        //    var parser = new CssParser("    #id { width:1px;}   ");
-        //    var css = parser.Parse();
-        //    Assert.AreEqual("#id", css[0].Selector?.CssPaths[0].Item[0].Name);
-        //}
-        //[TestMethod]
-        //public void TestClassSelector()
-        //{
-        //    var parser = new CssParser("    .class { width:1px;}   ");
-        //    var css = parser.Parse();
-        //    Assert.AreEqual(".class", css[0].Selector?.CssPaths[0].Item[0].Name);
-        //}
     }
 }
